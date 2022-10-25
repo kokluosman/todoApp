@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Todo App</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstarp@5.2.1/dist/css/bootstrap.min.css">
+</head>
+<body>
+<!--Create navigation bar-->
+<nav class="navbar fixed-top bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Todo List</a>
+
+    </div>
+</nav>
+
+<!--create HTML registration form-->
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+<!--            success message-->
+            <div th:if="${param.succes}">
+                <div class="alert alert-info">
+                    You have successfully registered to todo app!!
+                </div>
+            </div>
+
+            <h1>Registration</h1>
+            <form th:action="@{/registration}"method="post" th:object="${user}}">
+                <div class="from-group">
+                    <label class="control-label" for="firstName">First Name</label>
+                    <input
+                            id="firstName"
+                            class="form-control"
+                            th:field="*{firstName}"
+                            required autofocus="autofocus"/>
+                    <label class="form-label" for="lastName">Last Name</label>
+                                                </div>
+
+
+
+
+
+
+
+                                        <div class="row">
+                                            <div class="col-12">
+
+                                                <select class="select form-control-lg">
+                                                    <option value="1" disabled>Choose option</option>
+                                                    <option value="2">Subject 1</option>
+                                                    <option value="3">Subject 2</option>
+                                                    <option value="4">Subject 3</option>
+                                                </select>
+                                                <label class="form-label select-label">Choose option</label>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 pt-2">
+                                            <input class="btn btn-primary btn-lg" type="submit" value="Submit" />
+                                        </div>
+
+                                    </form>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

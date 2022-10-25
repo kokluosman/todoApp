@@ -1,0 +1,72 @@
+package com.springtodoapp.configuration;
+
+import org.springdoc.webmvc.ui.SwaggerConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.*;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import com.springtodoapp.service.UserService;
+
+
+@Configuration
+@EnableWebSecurity
+@ComponentScan(basePackages = {"com.springtodoapp"} )
+@Import(SwaggerConfig.class)
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    public UserService userService;
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder(){
+         return new BCryptPasswordEncoder();
+    };
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
+        auth.setUserDetailsService(userService);
+        auth.setPasswordEncoder(passwordEncoder());
+        return auth;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider());
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/registration**" , "/js/**","/css/**","/img/**","/").permitAll()
+                .antMatchers("/tasklist**").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/swagger/**","/v2/api-docs","/cofiguration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/webjars/**").permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .defaultSuccessUrl("/tasklist")
+                .permitAll()
+                .and()
+                .logout()
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login?logout")
+                .permitAll();
+        http.csrf().disable();
+        http.headers().frameOptions().disable();
+
+    }
+}
